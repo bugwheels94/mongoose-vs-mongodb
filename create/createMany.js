@@ -18,6 +18,10 @@ Promise.all([
 	});
 	var recordModel = mongoose.model(collectionMongoose, recordSchema);
 	var nativeCollection = clients[1].db('mongoose-vs-mongodb').collection(collectionMongodb)
+	suite
+	.add('Mongoose', {
+		defer: true,
+		fn: function(def) {
 	var records = [];
 	for (var i = 0; i < 100; i++) {
 		records.push({
@@ -26,10 +30,6 @@ Promise.all([
 			job: 'Useless'
 		})
 	}
-	suite
-	.add('Mongoose', {
-		defer: true,
-		fn: function(def) {
 			recordModel.insertMany(records,() => {
 				def.resolve()
 			})
@@ -38,6 +38,14 @@ Promise.all([
 	.add('MongoDB', {
 		defer: true,
 		fn: function(def) {
+	var records = [];
+	for (var i = 0; i < 100; i++) {
+		records.push({
+			name: 'bugwheels' + i,
+			interest: 'Not Many',
+			job: 'Useless'
+		})
+	}
 			nativeCollection.insertMany(records, (e, r) => {
 				def.resolve();
 				// console.log(r)
@@ -49,8 +57,8 @@ Promise.all([
 	})
 	.on('complete', function() {
   		console.log('Fastest is ' + this.filter('fastest').map('name'));
-  		nativeCollection.drop()
-  		db.dropCollection(collectionMongoose)
+//  		nativeCollection.drop()
+ // 		db.dropCollection(collectionMongoose)
 	})
 	.run({ 'async': true });
 

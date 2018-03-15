@@ -19,6 +19,10 @@ Promise.all([
 	recordSchema.path('name').index({text: true})
 	var recordModel = mongoose.model(collectionMongoose, recordSchema);
 	var nativeCollection = clients[1].db('mongoose-vs-mongodb').collection(collectionMongodb)
+	suite
+	.add('Mongoose', {
+		defer: true,
+		fn: function(def) {
 	var records = [];
 	for (var i = 0; i < 100; i++) {
 		records.push({
@@ -27,10 +31,6 @@ Promise.all([
 			job: 'Useless'
 		})
 	}
-	suite
-	.add('Mongoose', {
-		defer: true,
-		fn: function(def) {
 			recordModel.insertMany(records,() => {
 				def.resolve()
 			})
@@ -39,6 +39,14 @@ Promise.all([
 	.add('MongoDB', {
 		defer: true,
 		fn: function(def) {
+	var records = [];
+	for (var i = 0; i < 100; i++) {
+		records.push({
+			name: 'bugwheels' + i,
+			interest: 'Not Many',
+			job: 'Useless'
+		})
+	}
 			nativeCollection.insertMany(records, (e, r) => {
 				def.resolve();
 				// console.log(r)
