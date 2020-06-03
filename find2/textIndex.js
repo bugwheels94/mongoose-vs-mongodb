@@ -1,10 +1,11 @@
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite;
+
 var mongoose = require('mongoose')
 const MongoClient = require('mongodb').MongoClient;
 Promise.all([
-	mongoose.connect('mongodb://mongo:27017/mongoose-vs-mongodb'),
-	MongoClient.connect('mongodb://mongo:27017')	
+	mongoose.connect('mongodb://talknonymous.local:27017/mongoose-vs-mongodb'),
+	MongoClient.connect('mongodb://talknonymous.local:27017')	
 ]).then((clients) => {
 	var db = mongoose.connection;
 	var Schema = mongoose.Schema;
@@ -13,13 +14,14 @@ Promise.all([
 		interest: String,
 		job: String
 	});
+	recordSchema.path('name').index({text: true})
 	var recordModel = mongoose.model('records', recordSchema);
 	var nativeCollection = clients[1].db('mongoose-vs-mongodb').collection('records')
 	suite
 	.add('Mongoose', {
 		defer: true,
 		fn: function(def) {
-			recordModel.find({name: "buwheels500000"}).exec().then(function (e) {
+			recordModel.find({$text :{ $search: "bugwheels90544"}}).exec().then(function (e) {
 				def.resolve();
 			});
 		}
@@ -27,9 +29,9 @@ Promise.all([
 	.add('MongoDB', {
 		defer: true,
 		fn: function(def) {
-			nativeCollection.find({name: 'buwheels500000'}).forEach((e, r) => {
+			nativeCollection.find({name: {$text :{ $search: 'bugwheels90544'}}}).toArray((r) => {
 				def.resolve();
-				// console.log(r)0
+				// console.log(r)
 			})
 		}
 	})

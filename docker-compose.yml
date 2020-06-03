@@ -1,0 +1,24 @@
+version: '3.1'
+services:
+  task-1:
+    command: "node /home/comparisons/suites/find2/mongo-create.js"
+    # command: "tail -F anything"
+    labels:
+      name: "MONGODB WRITE"
+    image: bugwheels94/comparisons:mongo-vs-mongoose
+    environment:
+      - OPERATIONS
+    depends_on:
+      - mongo
+  task-2:
+    command: "node /home/comparisons/suites/find2/mongoose-create.js"
+    # command: "tail -F anything"
+    labels:
+      name: "MONGOOSE WRITE"
+    environment:
+      - OPERATIONS
+    image: bugwheels94/comparisons:mongo-vs-mongoose
+    depends_on:
+      - mongo
+  mongo:
+    image: "mvertes/alpine-mongo"
